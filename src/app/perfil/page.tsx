@@ -12,6 +12,7 @@ import {
   InfoIcon,
   AlertCircleIcon,
 } from "lucide-react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export default async function ProfilePage() {
   dayjs.locale("es");
@@ -39,8 +40,8 @@ export default async function ProfilePage() {
     }
 
     return (
-      <div className="container mx-auto max-w-4xl p-6 min-h-[calc(100vh-5rem)] flex flex-col">
-        <div className="bg-base-100 shadow-xl rounded-lg p-6 flex-grow">
+      <div className="container mx-auto max-w-4xl p-6 min-h-[calc(100dvh)] flex flex-col justify-center">
+        <div className="bg-base-100 shadow-xl rounded-lg p-6 ">
           <h1 className="text-2xl font-bold mb-6">Mi Perfil</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -59,13 +60,12 @@ export default async function ProfilePage() {
                 <p className="text-sm opacity-75">{userDetails.email}</p>
               </div>
 
-              <div className="mt-4">
-                <Link
-                  href="/perfil/editar"
-                  className="btn btn-outline w-full mb-2"
-                >
+              <div className="mt-4 space-y-2">
+                <Link href="/perfil/editar" className="btn btn-outline w-full">
                   Editar Perfil
                 </Link>
+
+                <LogoutButton />
               </div>
             </div>
 
@@ -102,6 +102,21 @@ export default async function ProfilePage() {
                   Eventos a los que asistirás
                 </h2>
 
+                <Suspense
+                  fallback={
+                    <div className="space-y-4">
+                      <div className="card bg-base-200 shadow-sm p-4 animate-pulse">
+                        <div className="h-6 bg-base-300 rounded w-3/4 mb-3"></div>
+                        <div className="h-4 bg-base-300 rounded w-full mb-2"></div>
+                        <div className="h-4 bg-base-300 rounded w-2/3"></div>
+                        <div className="flex gap-2 mt-3">
+                          <div className="h-4 bg-base-300 rounded w-1/4"></div>
+                          <div className="h-4 bg-base-300 rounded w-1/4"></div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                />
                 <div className="space-y-4">
                   {eventosAsistidos && eventosAsistidos.length > 0 ? (
                     eventosAsistidos.map((asistencia) => (
