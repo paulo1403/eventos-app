@@ -50,7 +50,7 @@ export default async function ProfilePage() {
             <div className="md:col-span-1">
               <div className="flex flex-col items-center p-4 bg-base-100 rounded-lg border border-base-200">
                 <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-24">
+                  <div className="bg-primary text-primary-content rounded-full w-24 flex justify-center items-center">
                     <span className="text-3xl">
                       {userDetails.nombre.charAt(0).toUpperCase()}
                     </span>
