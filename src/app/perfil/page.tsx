@@ -6,12 +6,10 @@ import Link from "next/link";
 export default async function ProfilePage() {
   const session = await auth();
 
-  // If not logged in, redirect to login
   if (!session || !session.user) {
     redirect("/auth/login");
   }
 
-  // Get full user details from database
   const userId = session.user.id;
   const userDetails = await getUserById(userId);
 
