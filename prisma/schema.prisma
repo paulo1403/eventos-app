@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                 String    @id @default(uuid())
+  nombre             String
+  email              String    @unique
+  password           String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  entradas           Entrada[]
+  eventosOrganizados Evento[]  @relation("OrganizadorEventos")
+  asistencia         Asistente[]
+}
+
+model Evento {
+  id            String     @id @default(uuid())
+  titulo        String
+  descripcion   String
+  fecha         DateTime
+  horaInicio    String
+  horaFin       String
+  lugar         String
+  direccion     String
+  latitud       Float?
+  longitud      Float?
+  organizadorId String
+  organizador   Usuario    @relation("OrganizadorEventos", fields: [organizadorId], references: [id])
+  entradas      Entrada[]
+  asistentes    Asistente[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  imagen        String?
+  precio        Float      @default(0)
+  capacidad     Int
+  categoria     String
+}
+
+model Entrada {
+  id        String   @id @default(uuid())
+  eventoId  String
+  evento    Evento   @relation(fields: [eventoId], references: [id])
+  usuarioId String
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  precio    Float
+  codigo    String   @unique
+  estado    String   // "disponible", "vendida", "cancelada", "usada"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Asistente {
+  id          String   @id @default(uuid())
+  eventoId    String
+  evento      Evento   @relation(fields: [eventoId], references: [id])
+  usuarioId   String
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  registradoEn DateTime @default(now())
+  asistio     Boolean  @default(false)
+  
+  @@unique([eventoId, usuarioId])
+}

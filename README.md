@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eventos App - Plataforma de Gestión de Eventos
 
-## Getting Started
+Una aplicación completa para la gestión de eventos construida con Next.js, Prisma y SQLite. Esta plataforma permite organizar, promocionar y administrar eventos, así como la gestión de asistentes y venta de entradas.
 
-First, run the development server:
+## 📋 Características
+
+### Para usuarios
+
+- **Descubrimiento de eventos**: Explora eventos por categoría, fecha, ubicación y más
+- **Registro y compra de entradas**: Proceso sencillo para adquirir entradas a eventos
+- **Perfil de usuario**: Historial de eventos asistidos y próximos
+- **Mapas interactivos**: Visualiza la ubicación exacta de cada evento
+- **Códigos QR**: Entradas digitales con códigos QR para fácil acceso
+
+### Para organizadores
+
+- **Creación y gestión de eventos**: Interfaz completa para administrar todos los aspectos de un evento
+- **Control de asistentes**: Seguimiento de registros y check-in en tiempo real
+- **Análisis de datos**: Estadísticas sobre ventas de entradas y asistencia
+- **Integración con sistemas de pago**: Gestión de transacciones seguras
+
+## 🛠️ Tecnologías
+
+- **Frontend**: Next.js 15 con App Router y React 19
+- **Backend**: API Routes de Next.js con Server Components
+- **Base de datos**: SQLite (desarrollo) gestionada con Prisma ORM
+- **Autenticación**: Sistema seguro para proteger cuentas de usuario
+- **UI**: Diseño responsive con Tailwind CSS
+
+## ⚙️ Requisitos previos
+
+- Node.js 20.0 o superior
+- npm 10.0 o superior
+
+## 🚀 Instalación y configuración
+
+### 1. Clonar el repositorio
+
+```bash
+git clone <url-del-repositorio>
+cd eventos-app
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Configurar variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+
+```
+DATABASE_URL=file:./prisma/dev.db
+# Añadir otras variables de entorno según sea necesario
+```
+
+### 4. Configurar la base de datos
+
+```bash
+# Aplicar el esquema Prisma a la base de datos
+npx prisma db push
+
+# Generar el cliente Prisma
+npx prisma generate
+```
+
+### 5. Iniciar el servidor de desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Estructura del proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/               # Rutas y páginas de Next.js
+    api/             # API Routes para el backend
+    eventos/         # Páginas relacionadas con eventos
+    perfil/          # Páginas de perfil de usuario
+  components/        # Componentes reutilizables
+  lib/               # Utilidades y configuraciones
+prisma/
+  schema.prisma      # Esquema de la base de datos
+```
 
-## Learn More
+## 📝 Desarrollo
 
-To learn more about Next.js, take a look at the following resources:
+### Comandos útiles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Ejecutar el servidor de desarrollo
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Construir la aplicación para producción
+npm run build
 
-## Deploy on Vercel
+# Iniciar la aplicación en modo producción
+npm start
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Ejecutar linter
+npm run lint
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Ver la base de datos (interfaz de Prisma)
+npx prisma studio
+```
+
+## 🔄 Flujo de trabajo del proyecto
+
+1. Los usuarios pueden registrarse y crear una cuenta
+2. Los organizadores pueden crear y configurar eventos
+3. Los usuarios pueden descubrir eventos y comprar entradas
+4. Al asistir a un evento, se puede validar la entrada mediante código QR
+5. Posteriormente, los usuarios pueden ver su historial de eventos asistidos
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la licencia MIT.
