@@ -5,27 +5,18 @@ import { useFormStatus } from "react-dom";
 import { loginSchema } from "@/lib/auth/auth.schemas";
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Box,
-  Card,
-  Heading,
-  Text,
-  TextField,
-  Button,
-  Flex,
-  Link,
-  Callout,
-} from "@radix-ui/themes";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import Link from "next/link";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} size="3">
+    <button type="submit" className="btn btn-primary w-full" disabled={pending}>
       {pending ? "Iniciando sesión..." : "Iniciar sesión"}
-    </Button>
+    </button>
   );
 }
 
@@ -33,6 +24,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get("registered") === "true";
+  const [showPassword, setShowPassword] = useState(false);
 
   const initialState = {
     error: null,
@@ -77,83 +69,99 @@ export function LoginForm() {
   const [formState, formAction] = useActionState(loginAction, initialState);
 
   return (
-    <Card size="3" style={{ maxWidth: "400px", width: "100%" }}>
-      <Heading as="h2" size="5" align="center" mb="4">
-        Iniciar sesión
-      </Heading>
+    <div className="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300">
+      <div className="card-body">
+        <h2 className="text-2xl font-bold text-center mb-4">Iniciar sesión</h2>
 
-      {justRegistered && (
-        <Callout.Root color="green" mb="4">
-          <Callout.Text>
-            Registro exitoso. Ahora puedes iniciar sesión.
-          </Callout.Text>
-        </Callout.Root>
-      )}
+        {justRegistered && (
+          <div className="alert alert-success mb-4">
+            <span>Registro exitoso. Ahora puedes iniciar sesión.</span>
+          </div>
+        )}
 
-      {formState.error && (
-        <Callout.Root color="red" mb="4">
-          <Callout.Icon>
-            <InfoCircledIcon />
-          </Callout.Icon>
-          <Callout.Text>{formState.error}</Callout.Text>
-        </Callout.Root>
-      )}
+        {formState.error && (
+          <div className="alert alert-error mb-4">
+            <span>{formState.error}</span>
+          </div>
+        )}
 
-      <form action={formAction}>
-        <Flex direction="column" gap="3">
-          <Box>
-            <TextField.Root
-              placeholder="Correo electrónico"
-              type="email"
-              name="email"
-              required
-            />
-            {formState.validationErrors?.find((e) => e.path[0] === "email")
-              ?.message && (
-              <Text size="1" color="red" mt="1">
-                {
-                  formState.validationErrors.find((e) => e.path[0] === "email")
-                    ?.message
-                }
-              </Text>
-            )}
-          </Box>
+        <form action={formAction}>
+          <div className="flex flex-col gap-3">
+            <div className="form-control">
+              <input
+                placeholder="Correo electrónico"
+                type="email"
+                name="email"
+                required
+                className="input input-bordered w-full"
+              />
+              {formState.validationErrors?.find((e) => e.path[0] === "email")
+                ?.message && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {
+                      formState.validationErrors.find(
+                        (e) => e.path[0] === "email"
+                      )?.message
+                    }
+                  </span>
+                </label>
+              )}
+            </div>
 
-          <Box>
-            <TextField.Root
-              placeholder="Contraseña"
-              type="password"
-              name="password"
-              required
-            />
-            {formState.validationErrors?.find((e) => e.path[0] === "password")
-              ?.message && (
-              <Text size="1" color="red" mt="1">
-                {
-                  formState.validationErrors.find(
-                    (e) => e.path[0] === "password"
-                  )?.message
-                }
-              </Text>
-            )}
-          </Box>
+            <div className="form-control">
+              <div className="relative">
+                <input
+                  placeholder="Contraseña"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  className="input input-bordered w-full pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center px-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {formState.validationErrors?.find((e) => e.path[0] === "password")
+                ?.message && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {
+                      formState.validationErrors.find(
+                        (e) => e.path[0] === "password"
+                      )?.message
+                    }
+                  </span>
+                </label>
+              )}
+            </div>
 
-          <Flex justify="end">
-            <Link href="/auth/recuperar-contrasena" size="1">
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </Flex>
+            <div className="flex justify-end">
+              <Link
+                href="/auth/recuperar-contrasena"
+                className="text-sm link link-hover"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
 
-          <SubmitButton />
+            <SubmitButton />
 
-          <Flex justify="center" mt="4">
-            <Text size="2">
-              ¿No tienes una cuenta?{" "}
-              <Link href="/auth/register">Regístrate</Link>
-            </Text>
-          </Flex>
-        </Flex>
-      </form>
-    </Card>
+            <div className="flex justify-center mt-4">
+              <span className="text-sm">
+                ¿No tienes una cuenta?{" "}
+                <Link href="/auth/register" className="link link-primary">
+                  Regístrate
+                </Link>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
