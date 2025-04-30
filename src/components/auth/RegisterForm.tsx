@@ -1,30 +1,54 @@
-// Este archivo contendrá componentes específicos para la autenticación
-
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterFormData, registerSchema } from "@/lib/auth/auth.schemas";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { registerSchema } from "@/lib/auth/auth.schemas";
+import { useRouter } from "next/navigation";
+import {
+  Box,
+  Card,
+  Heading,
+  Text,
+  TextField,
+  Button,
+  Flex,
+  Link,
+  Callout,
+} from "@radix-ui/themes";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { z } from "zod";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending} size="3">
+      {pending ? "Registrando..." : "Registrarse"}
+    </Button>
+  );
+}
 
 export function RegisterForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-  });
+  const initialState = {
+    error: null,
+    success: false,
+  };
 
-  const onSubmit = async (data: RegisterFormData) => {
+  async function registerAction(prevState: any, formData: FormData) {
+    const nombre = formData.get("nombre") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
     try {
-      setIsSubmitting(true);
-      setError(null);
+      const validatedData = registerSchema.parse({
+        nombre,
+        email,
+        password,
+        confirmPassword,
+      });
 
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -32,9 +56,9 @@ export function RegisterForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nombre: data.nombre,
-          email: data.email,
-          password: data.password,
+          nombre: validatedData.nombre,
+          email: validatedData.email,
+          password: validatedData.password,
         }),
       });
 
@@ -44,71 +68,130 @@ export function RegisterForm() {
         throw new Error(result.message || "Error al registrar usuario");
       }
 
-      // Redirigir al login si el registro es exitoso
-      window.location.href = "/auth/login?registered=true";
-    } catch (err: any) {
-      setError(err.message || "Ha ocurrido un error durante el registro");
-    } finally {
-      setIsSubmitting(false);
+      router.push("/auth/login?registered=true");
+      return { error: null, success: true };
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return {
+          error: err.errors[0].message,
+          success: false,
+          validationErrors: err.errors,
+        };
+      } else if (err instanceof Error) {
+        return { error: err.message, success: false };
+      }
+
+      return {
+        error: "Ha ocurrido un error durante el registro",
+        success: false,
+      };
     }
-  };
+  }
+
+  const [formState, formAction] = useActionState(registerAction, initialState);
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+    <Card size="3" style={{ maxWidth: "400px", width: "100%" }}>
+      <Heading as="h2" size="5" align="center" mb="4">
         Crear una cuenta
-      </h2>
+      </Heading>
 
-      {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4">
-          {error}
-        </div>
+      {formState.error && (
+        <Callout.Root color="red" mb="4">
+          <Callout.Icon>
+            <InfoCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>{formState.error}</Callout.Text>
+        </Callout.Root>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="Nombre completo"
-          type="text"
-          placeholder="Tu nombre"
-          error={errors.nombre?.message}
-          {...register("nombre")}
-        />
+      <form action={formAction}>
+        <Flex direction="column" gap="3">
+          <Box>
+            <TextField.Root
+              placeholder="Nombre completo"
+              type="text"
+              name="nombre"
+              required
+            />
+            {formState.validationErrors?.find((e) => e.path[0] === "nombre")
+              ?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find((e) => e.path[0] === "nombre")
+                    ?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <Input
-          label="Correo electrónico"
-          type="email"
-          placeholder="tu@email.com"
-          error={errors.email?.message}
-          {...register("email")}
-        />
+          <Box>
+            <TextField.Root
+              placeholder="Correo electrónico"
+              type="email"
+              name="email"
+              required
+            />
+            {formState.validationErrors?.find((e) => e.path[0] === "email")
+              ?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find((e) => e.path[0] === "email")
+                    ?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <Input
-          label="Contraseña"
-          type="password"
-          placeholder="Mínimo 6 caracteres"
-          error={errors.password?.message}
-          {...register("password")}
-        />
+          <Box>
+            <TextField.Root
+              placeholder="Contraseña"
+              type="password"
+              name="password"
+              required
+            />
+            {formState.validationErrors?.find((e) => e.path[0] === "password")
+              ?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find(
+                    (e) => e.path[0] === "password"
+                  )?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <Input
-          label="Confirmar contraseña"
-          type="password"
-          placeholder="Confirma tu contraseña"
-          error={errors.confirmPassword?.message}
-          {...register("confirmPassword")}
-        />
+          <Box>
+            <TextField.Root
+              placeholder="Confirmar contraseña"
+              type="password"
+              name="confirmPassword"
+              required
+            />
+            {formState.validationErrors?.find(
+              (e) => e.path[0] === "confirmPassword"
+            )?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find(
+                    (e) => e.path[0] === "confirmPassword"
+                  )?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <Button type="submit" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? "Registrando..." : "Registrarse"}
-        </Button>
+          <SubmitButton />
+
+          <Flex justify="center" mt="4">
+            <Text size="2">
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/auth/login">Inicia sesión</Link>
+            </Text>
+          </Flex>
+        </Flex>
       </form>
-
-      <p className="mt-4 text-center text-gray-600">
-        ¿Ya tienes una cuenta?{" "}
-        <a href="/auth/login" className="text-indigo-600 hover:text-indigo-800">
-          Inicia sesión
-        </a>
-      </p>
-    </div>
+    </Card>
   );
 }

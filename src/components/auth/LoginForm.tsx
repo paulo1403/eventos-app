@@ -1,113 +1,159 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData, loginSchema } from "@/lib/auth/auth.schemas";
-import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { loginSchema } from "@/lib/auth/auth.schemas";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+  Box,
+  Card,
+  Heading,
+  Text,
+  TextField,
+  Button,
+  Flex,
+  Link,
+  Callout,
+} from "@radix-ui/themes";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { z } from "zod";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending} size="3">
+      {pending ? "Iniciando sesión..." : "Iniciar sesión"}
+    </Button>
+  );
+}
 
 export function LoginForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Verificar si viene de un registro exitoso
   const justRegistered = searchParams.get("registered") === "true";
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
+  const initialState = {
+    error: null,
+    success: false,
+  };
 
-  const onSubmit = async (data: LoginFormData) => {
+  async function loginAction(prevState: any, formData: FormData) {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
     try {
-      setIsSubmitting(true);
-      setError(null);
+      const validatedData = loginSchema.parse({ email, password });
 
       const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
+        email: validatedData.email,
+        password: validatedData.password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError("Credenciales incorrectas");
-        return;
+        return { error: "Credenciales incorrectas", success: false };
       }
 
-      // Redirigir al perfil del usuario
-      window.location.href = "/perfil";
-    } catch (err: any) {
-      setError("Ha ocurrido un error durante el inicio de sesión");
-    } finally {
-      setIsSubmitting(false);
+      router.push("/perfil");
+      return { error: null, success: true };
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return {
+          error: err.errors[0].message,
+          success: false,
+          validationErrors: err.errors,
+        };
+      }
+
+      return {
+        error: "Ha ocurrido un error durante el inicio de sesión",
+        success: false,
+      };
     }
-  };
+  }
+
+  const [formState, formAction] = useActionState(loginAction, initialState);
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+    <Card size="3" style={{ maxWidth: "400px", width: "100%" }}>
+      <Heading as="h2" size="5" align="center" mb="4">
         Iniciar sesión
-      </h2>
+      </Heading>
 
       {justRegistered && (
-        <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4">
-          Registro exitoso. Ahora puedes iniciar sesión.
-        </div>
+        <Callout.Root color="green" mb="4">
+          <Callout.Text>
+            Registro exitoso. Ahora puedes iniciar sesión.
+          </Callout.Text>
+        </Callout.Root>
       )}
 
-      {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4">
-          {error}
-        </div>
+      {formState.error && (
+        <Callout.Root color="red" mb="4">
+          <Callout.Icon>
+            <InfoCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>{formState.error}</Callout.Text>
+        </Callout.Root>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="Correo electrónico"
-          type="email"
-          placeholder="tu@email.com"
-          error={errors.email?.message}
-          {...register("email")}
-        />
+      <form action={formAction}>
+        <Flex direction="column" gap="3">
+          <Box>
+            <TextField.Root
+              placeholder="Correo electrónico"
+              type="email"
+              name="email"
+              required
+            />
+            {formState.validationErrors?.find((e) => e.path[0] === "email")
+              ?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find((e) => e.path[0] === "email")
+                    ?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <Input
-          label="Contraseña"
-          type="password"
-          placeholder="Tu contraseña"
-          error={errors.password?.message}
-          {...register("password")}
-        />
+          <Box>
+            <TextField.Root
+              placeholder="Contraseña"
+              type="password"
+              name="password"
+              required
+            />
+            {formState.validationErrors?.find((e) => e.path[0] === "password")
+              ?.message && (
+              <Text size="1" color="red" mt="1">
+                {
+                  formState.validationErrors.find(
+                    (e) => e.path[0] === "password"
+                  )?.message
+                }
+              </Text>
+            )}
+          </Box>
 
-        <div className="flex justify-end">
-          <a
-            href="/auth/recuperar-contrasena"
-            className="text-sm text-indigo-600 hover:text-indigo-800"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
+          <Flex justify="end">
+            <Link href="/auth/recuperar-contrasena" size="1">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </Flex>
 
-        <Button type="submit" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
-        </Button>
+          <SubmitButton />
+
+          <Flex justify="center" mt="4">
+            <Text size="2">
+              ¿No tienes una cuenta?{" "}
+              <Link href="/auth/register">Regístrate</Link>
+            </Text>
+          </Flex>
+        </Flex>
       </form>
-
-      <p className="mt-4 text-center text-gray-600">
-        ¿No tienes una cuenta?{" "}
-        <a
-          href="/auth/register"
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Regístrate
-        </a>
-      </p>
-    </div>
+    </Card>
   );
 }
