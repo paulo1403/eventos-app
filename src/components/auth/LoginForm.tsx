@@ -38,18 +38,27 @@ export function LoginForm() {
     try {
       const validatedData = loginSchema.parse({ email, password });
 
-      const result = await signIn("credentials", {
-        email: validatedData.email,
-        password: validatedData.password,
-        redirect: false,
-      });
+      try {
+        const result = await signIn("credentials", {
+          email: validatedData.email,
+          password: validatedData.password,
+          redirect: false,
+        });
 
-      if (result?.error) {
-        return { error: "Credenciales incorrectas", success: false };
+        if (result?.error) {
+          return { error: "Credenciales incorrectas", success: false };
+        }
+
+        if (result?.ok) {
+          router.push("/perfil");
+          return { error: null, success: true };
+        }
+      } catch (signInError) {
+        console.error("Error during signIn:", signInError);
+        return { error: "Error de conexión con el servidor", success: false };
       }
 
-      router.push("/perfil");
-      return { error: null, success: true };
+      return { error: "Error al iniciar sesión", success: false };
     } catch (err) {
       if (err instanceof z.ZodError) {
         return {

@@ -4,6 +4,8 @@ import { loginSchema } from "@/lib/auth/auth.schemas";
 import { getUserByEmail, verifyPassword } from "@/lib/auth/auth.service";
 
 export const authConfig: NextAuthConfig = {
+  secret:
+    process.env.NEXTAUTH_SECRET || "este-es-un-secret-temporal-para-desarrollo",
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/logout",
