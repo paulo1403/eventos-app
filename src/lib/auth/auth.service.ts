@@ -12,6 +12,35 @@ export async function getUserByEmail(email: string) {
 export async function getUserById(id: string) {
   return prisma.usuario.findUnique({
     where: { id },
+    include: {
+      asistencia: {
+        include: {
+          evento: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getUserEventosAsistidos(userId: string) {
+  return prisma.asistente.findMany({
+    where: {
+      usuarioId: userId,
+    },
+    include: {
+      evento: {
+        include: {
+          organizador: {
+            select: {
+              nombre: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      registradoEn: "desc",
+    },
   });
 }
 
