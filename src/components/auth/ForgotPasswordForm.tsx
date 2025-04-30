@@ -62,7 +62,7 @@ export function ForgotPasswordForm() {
       </h2>
 
       {success ? (
-        <div className="alert alert-success">
+        <div className="alert alert-success flex flex-col items-center">
           <p>
             Si tu dirección de correo electrónico está registrada, recibirás
             instrucciones para restablecer tu contraseña. Revisa tu bandeja de
