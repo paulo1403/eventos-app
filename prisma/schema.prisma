@@ -15,6 +15,7 @@ model Usuario {
   nombre             String
   email              String    @unique
   password           String
+  imagenPerfil       String?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   entradas           Entrada[]

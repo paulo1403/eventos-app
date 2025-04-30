@@ -9,8 +9,10 @@ Una aplicación completa para la gestión de eventos construida con Next.js, Pri
 - **Descubrimiento de eventos**: Explora eventos por categoría, fecha, ubicación y más
 - **Registro y compra de entradas**: Proceso sencillo para adquirir entradas a eventos
 - **Perfil de usuario**: Historial de eventos asistidos y próximos
+- **Personalización de perfil**: Edición de datos personales y subida de foto de perfil
 - **Mapas interactivos**: Visualiza la ubicación exacta de cada evento
 - **Códigos QR**: Entradas digitales con códigos QR para fácil acceso
+- **Tema claro/oscuro**: Modo de visualización adaptable a las preferencias del usuario
 
 ### Para organizadores
 
@@ -24,8 +26,10 @@ Una aplicación completa para la gestión de eventos construida con Next.js, Pri
 - **Frontend**: Next.js 15 con App Router y React 19
 - **Backend**: API Routes de Next.js con Server Components
 - **Base de datos**: SQLite (desarrollo) gestionada con Prisma ORM
-- **Autenticación**: Sistema seguro para proteger cuentas de usuario
-- **UI**: Diseño responsive con Tailwind CSS
+- **Autenticación**: Sistema seguro basado en NextAuth para proteger cuentas de usuario
+- **UI**: Diseño responsive con Tailwind CSS y DaisyUI
+- **Temas**: Sistema de temas claro/oscuro con persistencia en localStorage
+- **Imágenes**: Subida y gestión de imágenes para perfiles de usuario
 
 ## ⚙️ Requisitos previos
 
@@ -59,11 +63,17 @@ DATABASE_URL=file:./prisma/dev.db
 ### 4. Configurar la base de datos
 
 ```bash
-# Aplicar el esquema Prisma a la base de datos
-npx prisma db push
+# Aplicar las migraciones de Prisma para crear todas las tablas
+npx prisma migrate dev
+
+# Alternativamente, si no quieres crear migraciones:
+# npx prisma db push
 
 # Generar el cliente Prisma
 npx prisma generate
+
+# Opcional: Explorar la base de datos con Prisma Studio
+npx prisma studio
 ```
 
 ### 5. Iniciar el servidor de desarrollo

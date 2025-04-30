@@ -49,13 +49,21 @@ export default async function ProfilePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1">
               <div className="flex flex-col items-center p-4 bg-base-100 rounded-lg border border-base-200">
-                <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-24 flex justify-center items-center">
+                {userDetails.imagenPerfil ? (
+                  <div className="rounded-full w-24 h-24 overflow-hidden">
+                    <img
+                      src={userDetails.imagenPerfil}
+                      alt="Foto de perfil"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-primary text-primary-content rounded-full w-24 h-24 flex justify-center items-center">
                     <span className="text-3xl">
                       {userDetails.nombre.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                </div>
+                )}
                 <h2 className="text-xl font-semibold mt-4 text-base-content">
                   {userDetails.nombre}
                 </h2>

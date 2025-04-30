@@ -52,6 +52,7 @@ export function RegisterForm() {
           nombre: validatedData.nombre,
           email: validatedData.email,
           password: validatedData.password,
+          confirmPassword: validatedData.confirmPassword,
         }),
       });
 
@@ -104,6 +105,7 @@ export function RegisterForm() {
                 type="text"
                 name="nombre"
                 required
+                autoComplete="name"
                 className="input input-bordered w-full text-base-content placeholder:text-base-content/60"
               />
               {formState.validationErrors?.find((e) => e.path[0] === "nombre")
@@ -126,6 +128,7 @@ export function RegisterForm() {
                 type="email"
                 name="email"
                 required
+                autoComplete="new-email"
                 className="input input-bordered w-full text-base-content placeholder:text-base-content/60"
               />
               {formState.validationErrors?.find((e) => e.path[0] === "email")
@@ -149,6 +152,7 @@ export function RegisterForm() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
+                  autoComplete="new-password"
                   className="input input-bordered w-full pr-10 text-base-content placeholder:text-base-content/60"
                 />
                 <button
@@ -180,6 +184,7 @@ export function RegisterForm() {
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
                   required
+                  autoComplete="new-password"
                   className="input input-bordered w-full pr-10 text-base-content placeholder:text-base-content/60"
                 />
                 <button

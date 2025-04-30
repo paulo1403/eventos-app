@@ -3,13 +3,28 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+// Define un tipo extendido que incluya todos los campos y relaciones
+interface UsuarioWithRelations {
+  id: string;
+  nombre: string;
+  email: string;
+  password: string;
+  imagenPerfil?: string; // Campo añadido explícitamente
+  createdAt: Date;
+  updatedAt: Date;
+  asistencia?: any[];
+  eventosOrganizados?: any[];
+}
+
 export async function getUserByEmail(email: string) {
   return prisma.usuario.findUnique({
     where: { email },
   });
 }
 
-export async function getUserById(id: string) {
+export async function getUserById(
+  id: string
+): Promise<UsuarioWithRelations | null> {
   return prisma.usuario.findUnique({
     where: { id },
     include: {
@@ -70,4 +85,14 @@ export async function verifyPassword(
   hashedPassword: string
 ) {
   return bcrypt.compare(plainPassword, hashedPassword);
+}
+
+export async function updateUser(
+  id: string,
+  data: { nombre?: string; imagenPerfil?: string }
+) {
+  return prisma.usuario.update({
+    where: { id },
+    data,
+  });
 }
