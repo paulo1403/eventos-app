@@ -153,7 +153,7 @@ export function LoginForm() {
 
             <div className="flex justify-end">
               <Link
-                href="/auth/recuperar-contrasena"
+                href="/auth/forgot-password"
                 className="text-sm link link-hover text-base-content/80 hover:text-base-content"
               >
                 ¿Olvidaste tu contraseña?

@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
-// Define un tipo extendido que incluya todos los campos y relaciones
 interface UsuarioWithRelations {
   id: string;
   nombre: string;
   email: string;
   password: string;
-  imagenPerfil?: string; // Campo añadido explícitamente
+  imagenPerfil?: string;
   createdAt: Date;
   updatedAt: Date;
   asistencia?: any[];
@@ -95,4 +95,57 @@ export async function updateUser(
     where: { id },
     data,
   });
+}
+
+export async function createResetPasswordToken(email: string) {
+  const token = crypto.randomBytes(32).toString("hex");
+
+  const expires = new Date();
+  expires.setHours(expires.getHours() + 1);
+
+  const user = await prisma.usuario.update({
+    where: { email },
+    data: {
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    } as any,
+  });
+
+  return user ? { token, email } : null;
+}
+
+export async function validateResetToken(token: string, email: string) {
+  const user = await prisma.usuario.findFirst({
+    where: {
+      email,
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        gt: new Date(),
+      },
+    } as any,
+  });
+
+  return !!user;
+}
+
+export async function resetPassword(
+  email: string,
+  token: string,
+  newPassword: string
+) {
+  const isValid = await validateResetToken(token, email);
+  if (!isValid) return false;
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await prisma.usuario.update({
+    where: { email },
+    data: {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    } as any,
+  });
+
+  return true;
 }

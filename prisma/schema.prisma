@@ -11,16 +11,18 @@ datasource db {
 }
 
 model Usuario {
-  id                 String    @id @default(uuid())
-  nombre             String
-  email              String    @unique
-  password           String
-  imagenPerfil       String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  entradas           Entrada[]
-  eventosOrganizados Evento[]  @relation("OrganizadorEventos")
-  asistencia         Asistente[]
+  id                      String    @id @default(uuid())
+  nombre                  String
+  email                   String    @unique
+  password                String
+  imagenPerfil            String?
+  resetPasswordToken      String?
+  resetPasswordExpires    DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  entradas                Entrada[]
+  eventosOrganizados      Evento[]  @relation("OrganizadorEventos")
+  asistencia              Asistente[]
 }
 
 model Evento {
