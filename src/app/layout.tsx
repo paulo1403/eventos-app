@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClientThemeToggle } from "@/components/ui/ClientThemeToggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,6 +29,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        {/* ThemeToggle debe estar fuera del elemento children para aparecer en todas las páginas */}
+        <div id="theme-toggle-wrapper">
+          {/* El componente ThemeToggle se importa en un Componente Cliente separado */}
+          <ClientThemeToggle />
+        </div>
       </body>
     </html>
   );

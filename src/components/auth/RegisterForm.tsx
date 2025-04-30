@@ -86,7 +86,7 @@ export function RegisterForm() {
   return (
     <div className="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300">
       <div className="card-body">
-        <h2 className="text-2xl font-bold text-center mb-4">
+        <h2 className="text-2xl font-bold text-center mb-4 text-base-content">
           Crear una cuenta
         </h2>
 
@@ -104,12 +104,12 @@ export function RegisterForm() {
                 type="text"
                 name="nombre"
                 required
-                className="input input-bordered w-full"
+                className="input input-bordered w-full text-base-content placeholder:text-base-content/60"
               />
               {formState.validationErrors?.find((e) => e.path[0] === "nombre")
                 ?.message && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
+                  <span className="label-text-alt text-error font-medium">
                     {
                       formState.validationErrors.find(
                         (e) => e.path[0] === "nombre"
@@ -126,12 +126,12 @@ export function RegisterForm() {
                 type="email"
                 name="email"
                 required
-                className="input input-bordered w-full"
+                className="input input-bordered w-full text-base-content placeholder:text-base-content/60"
               />
               {formState.validationErrors?.find((e) => e.path[0] === "email")
                 ?.message && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
+                  <span className="label-text-alt text-error font-medium">
                     {
                       formState.validationErrors.find(
                         (e) => e.path[0] === "email"
@@ -149,11 +149,11 @@ export function RegisterForm() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
-                  className="input input-bordered w-full pr-10"
+                  className="input input-bordered w-full pr-10 text-base-content placeholder:text-base-content/60"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-base-content/70 hover:text-base-content"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -162,7 +162,7 @@ export function RegisterForm() {
               {formState.validationErrors?.find((e) => e.path[0] === "password")
                 ?.message && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
+                  <span className="label-text-alt text-error font-medium">
                     {
                       formState.validationErrors.find(
                         (e) => e.path[0] === "password"
@@ -180,11 +180,11 @@ export function RegisterForm() {
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
                   required
-                  className="input input-bordered w-full pr-10"
+                  className="input input-bordered w-full pr-10 text-base-content placeholder:text-base-content/60"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-base-content/70 hover:text-base-content"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
@@ -198,7 +198,7 @@ export function RegisterForm() {
                 (e) => e.path[0] === "confirmPassword"
               )?.message && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
+                  <span className="label-text-alt text-error font-medium">
                     {
                       formState.validationErrors.find(
                         (e) => e.path[0] === "confirmPassword"
@@ -212,9 +212,12 @@ export function RegisterForm() {
             <SubmitButton />
 
             <div className="flex justify-center mt-4">
-              <span className="text-sm">
+              <span className="text-sm text-base-content">
                 ¿Ya tienes una cuenta?{" "}
-                <Link href="/auth/login" className="link link-primary">
+                <Link
+                  href="/auth/login"
+                  className="link link-primary font-medium"
+                >
                   Inicia sesión
                 </Link>
               </span>
